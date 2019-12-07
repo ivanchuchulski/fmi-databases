@@ -1,0 +1,158 @@
+
+--Вмъкване на кортежи
+	Insert Into t(a, b, c) 	--> може да не се пише ако изреждаме всички атрибути в Values, но спазвайки реда им в таблицата
+							--> може да се изпуснат някои атрибути, така на тях им се дава NULL стойност
+	Values	(a1, b1, c1), 	--> може да се пропусне атрибут, ако има зададена DEFAULT стойност или 
+			(a2, b2, c2)
+			
+	--ако всички имат зададена стойност по подразбиране или могат да приемат NULL стойност
+	Insert Into t
+	Default Values
+
+	--вмъкване на кортежи от съществуваща таблица
+	Insert Into t (a, b, c)		--може да се пропусне, ако има съответствие на атрибутите
+	Select d,e,f
+	From m
+	Where m.d = 'key'
+
+--Промяна на стойности на вмъкнати кортежи
+	Update t
+	Set a = expression | Null | Default, b = 50		--само по веднъж може да се сменя задава стойността на атрибут в една команда
+	Where a < 50
+
+	Update t
+	Set a = (Select MAX(speed) 
+				From laptop)	
+	Where a < 50
+
+--Изтриване на кортежи
+	Delete From t; ---> Ако се остави до тук се затриват всички кортежи от таблица
+	Where a1 > 50 and a2 Not In (Select model
+									From pc)
+
+--Дефиниране на релационни схеми
+	--типове данни
+		CHAR(N)
+		VARCHAR(N)
+		INT
+		DECIMAL (p, s)		--precision : общо колко цифри са, scale : колко цифри дробна част
+		REAL
+		
+	Create Table residance(
+		name VARCHAR(15) CONSTRAINT pk_res PRIMARY KEY,
+		capacity INT
+	);
+	Create Table student(
+		id INT PRIMARY KEY,
+		firstname VARCHAR(30),
+		lastname VARCHAR(30),
+		residance VARCHAR(15),
+		CONSTRAINT fk_stud_resid FOREIGN KEY (residence) REFERENCES residence(name) 
+									ON UPDATE CASCADE
+									ON DELETE NO ACTION
+	);
+
+	--вмъкване на атрибути и кортежи от вече съществуваща релация, 
+	--ограничения и ключеве не се прехвърлят, само име и тип на атрибутите
+	Select exi.d, exi.e, exi.f
+	Into t
+	From existing as exi
+	[Where exi.a = 'alabala'] 		--ако ги няма се вмъкват всички кортежи от m
+	[Group By ...]
+	[Having ...]
+
+--Промяна на схемата на релация
+	Alter Table t
+	Add a INT, Default 'unlisted' FOR phone
+
+	Alter Table t
+	Alter Column phone CHAR(15) NOT NULL
+
+	Alter Table t
+	Drop Column a
+
+	Alter Table t
+	Drop colomn a, b, c, Constraint pk_t, fk_t_m
+	
+	-- Не може да се реферира само част от PRIMARY KEY ако е съставен.
+	-- Политики за външен ключ:
+	-- NO ACTION - Ако изтрием 30 блок не ни дава, защото има студенти в него
+	-- CASCADE - Ако изтрием 30 блок студентите живеещи в него се затриват(използва се за промяна)
+	-- SET NULL - Ако изтрием 30 блок студентите живеещи там получават в residence null
+	-- SET DEFAULT - Ако изтрием 30 блок студентите живеещи там получават в residence стойността по подразбиране
+
+--Check ограничение
+	Create Table residance(
+		id INT not null Constraint ch_id Check(id INT(1,2,3,5))
+		name VARCHAR Constraint ch_name Check (name In ('abc', 'def')
+	);
+	
+--Изгледи
+	Create Index idx_ustudio 
+	On studio(name);
+	
+	Drop Index index_name On table_name  || Drop Index table_name.index_name
+	
+--Индекси
+	Create View v_name (a, b, c, d,)
+	As
+	Select a, b, c, AVG(b) As pesho
+	From t join m on t.a = m.a
+	Where a = 'opa'
+	[WITH CHECK OPTION]				--с тази опция всички модификации, които извършаваме чрез изгледа трябва да оставят в неговото поле
+									--на видимост(отговарят на условията в Where), иначе не пуска промените да минат
+
+
+
+--Тригери
+	--две служебни таблици - Inserted и Deleted
+	--After тригер
+	--	: може да се създава само за таблици
+	--	: за дадена команда {Insert | Update | Delete} се позволяват множество такива тригери
+	Create Trigger trig_name
+	On table_name
+	After {Insert | Update | Delete}
+	As
+	[Begin]
+	Insert Into ...
+	Select .. From ... ;
+	
+	Insert Into ...
+	Select ... From ...;
+	[End]
+
+	--Instead Of тригер
+	--	: може да се създава за таблици и за изгледи
+	--	: за дадена команда {Insert | Update | Delete} е възможен само един такъв тригер
+	Create Trigger trig_name
+	On table_name
+	Instead Of {Insert | Update | Delete}
+	As
+	Insert Into ...
+	Select ... From ...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,27 @@
+--ex3, subqueries, db movies
+
+--1.1
+SELECT mx.NAME
+FROM MOVIEEXEC as mx
+WHERE mx.NAME IN (SELECT ms.NAME
+					FROM MOVIESTAR as ms
+					WHERE ms.GENDER = 'F' and mx.NETWORTH > 10000000);
+
+--1.2
+SELECT ms.NAME
+FROM MOVIESTAR as ms
+WHERE ms.NAME  NOT IN (SELECT mx.NAME
+						FROM MOVIEEXEC as mx);
+--1.3
+SELECT m1.TITLE
+FROM MOVIE as m1
+WHERE m1.LENGTH > (	SELECT m2.LENGTH
+					FROM MOVIE as m2
+					WHERE m2.TITLE = 'Star Wars');
+
+--1.4
+SELECT mv.TITLE, mx1.NAME
+FROM MOVIEEXEC as mx1 JOIN MOVIE as mv ON mx1.CERT# = mv.PRODUCERC#
+WHERE mx1.NETWORTH >(	SELECT mx2.NETWORTH
+						FROM MOVIEEXEC as mx2						
+						WHERE mx2.NAME = 'Merv Griffin');

@@ -1,0 +1,47 @@
+--ex 3, db ships
+
+--3.1
+SELECT distinct cl1.COUNTRY
+FROM CLASSES as cl1
+WHERE cl1.NUMGUNS >=ALL (	SELECT cl2.NUMGUNS 
+							FROM CLASSES as cl2);
+
+--3.2
+SELECT distinct sh1.CLASS
+FROM OUTCOMES as o1 JOIN SHIPS as sh1 ON o1.SHIP = sh1.NAME
+WHERE o1.RESULT IN (	SELECT o2.RESULT 
+						FROM OUTCOMES as o2
+						WHERE o2.RESULT = 'sunk');
+
+--3.3
+SELECT sh1.name, sh1.CLASS
+FROM CLASSES as cl1 JOIN SHIPS as sh1 ON cl1.CLASS = sh1.CLASS
+WHERE cl1.BORE IN (	SELECT cl2.BORE 
+					FROM CLASSES as cl2 
+					WHERE cl2.BORE = 16);
+--3.3 without subquery
+SELECT sh1.name, sh1.CLASS
+FROM CLASSES as cl1 JOIN SHIPS as sh1 ON cl1.CLASS = sh1.CLASS
+WHERE cl1.BORE = 16;
+
+--3.4
+SELECT o1.BATTLE
+FROM OUTCOMES as o1 JOIN SHIPS as sh1 on o1.SHIP = sh1.NAME
+WHERE sh1.CLASS IN (SELECT sh2.CLASS
+					FROM ships as sh2
+					WHERE sh2.CLASS = 'Kongo');
+
+--3.4 simpler
+SELECT o1.BATTLE
+FROM OUTCOMES as o1 
+WHERE o1.SHIP IN (	SELECT sh2.NAME
+					FROM ships as sh2
+					WHERE sh2.CLASS = 'Kongo');
+
+--3.5
+SELECT sh1.CLASS, sh1.NAME
+FROM SHIPS as sh1 JOIN CLASSES as cl1 ON sh1.CLASS = cl1.CLASS
+WHERE cl1.NUMGUNS >=ALL (	SELECT cl2.NUMGUNS 
+							FROM CLASSES as cl2 
+							WHERE cl1.BORE = cl2.BORE)
+ORDER BY sh1.CLASS

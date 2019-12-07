@@ -1,0 +1,54 @@
+--ex 4, db ships
+
+--4.3.1
+SELECT*
+FROM SHIPS as sh JOIN CLASSES as cl ON sh.CLASS = cl.CLASS
+
+--4.3.2
+SELECT*
+FROM SHIPS as sh JOIN CLASSES as cl ON sh.CLASS = cl.CLASS
+UNION
+SELECT*
+FROM SHIPS as sh RIGHT JOIN CLASSES as cl ON sh.CLASS = cl.CLASS
+WHERE sh.NAME is null and cl.CLASS is not null
+
+--4.3.2, second variant, not entirely correct?
+--SELECT*
+--FROM SHIPS as sh FULL JOIN CLASSES as cl ON sh.CLASS = cl.CLASS
+
+--4.3.3
+SELECT cl.COUNTRY, sh.NAME
+FROM CLASSES as cl join SHIPS as sh ON cl.CLASS = sh.CLASS LEFT JOIN OUTCOMES as o ON sh.NAME = o.SHIP
+WHERE o.SHIP is null
+ORDER BY cl.COUNTRY
+
+--4.3.3, second variant
+--SELECT cl.COUNTRY, sh.NAME
+--FROM CLASSES as cl join SHIPS as sh ON cl.CLASS = sh.CLASS
+--WHERE sh.NAME not in (SELECT o.SHIP FROM OUTCOMES as o)
+--ORDER BY cl.COUNTRY;
+
+--4.3.4
+SELECT sh.NAME as 'Ship Name'
+FROM CLASSES as cl JOIN SHIPS as sh ON cl.CLASS = sh.CLASS
+WHERE cl.NUMGUNS >= 7 and sh.LAUNCHED = 1916;
+
+--4.3.5
+SELECT o.SHIP, o.BATTLE, b.DATE
+FROM OUTCOMES as o JOIN BATTLES as b ON o.BATTLE = b.NAME
+WHERE o.RESULT = 'sunk'
+ORDER BY o.BATTLE;
+
+--4.3.6
+SELECT sh.NAME, cl.DISPLACEMENT, sh.LAUNCHED
+FROM SHIPS as sh JOIN CLASSES as cl ON sh.CLASS = cl.CLASS and sh.NAME = cl.CLASS;
+
+--4.3.7
+SELECT cl.CLASS, cl.TYPE, cl.COUNTRY, cl.NUMGUNS, cl.BORE, cl.DISPLACEMENT 
+FROM CLASSES as cl LEFT JOIN SHIPS as sh ON cl.CLASS = sh.CLASS
+WHERE sh.LAUNCHED is null;
+
+--4.3.8
+SELECT sh.NAME, cl.DISPLACEMENT, cl.NUMGUNS, o.RESULT
+FROM CLASSES as cl JOIN SHIPS as sh ON cl.CLASS = sh.CLASS JOIN	OUTCOMES as o ON sh.NAME = o.SHIP
+WHERE o.BATTLE = 'North Atlantic';
